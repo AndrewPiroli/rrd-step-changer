@@ -2,13 +2,14 @@ import argparse
 import re
 import sys
 
+
 def do(outfile, srclines, args):
     in_db = False
     idx = 0
     max_idx = len(srclines)
     input_step = 0
     requested_step = int(args.step)
-    step_re = re.compile('.*<step>(\d*).*')
+    step_re = re.compile(".*<step>(\d*).*")
     try:
         for line in srclines:
             match = step_re.search(line)
@@ -16,13 +17,17 @@ def do(outfile, srclines, args):
                 input_step = int(match.group(1))
                 break
         else:
-            sys.exit(1) # No step found
+            sys.exit(1)  # No step found
     except Exception as e:
-        sys.exit(5) # Error in step detection
+        sys.exit(5)  # Error in step detection
     if requested_step >= input_step:
-        sys.exit(2) # Unsupported step change: requested step larger or equal to existing step
+        sys.exit(
+            2
+        )  # Unsupported step change: requested step larger or equal to existing step
     if not input_step % requested_step == 0:
-        sys.exit(3) # Unsupported step change: requested step not multiple of existing step
+        sys.exit(
+            3
+        )  # Unsupported step change: requested step not multiple of existing step
     else:
         rowrepeat = input_step // int(requested_step)
     while True:
@@ -36,11 +41,15 @@ def do(outfile, srclines, args):
                 for _ in range(rowrepeat):
                     outfile.writelines(srclines[idx])
             else:
-                outfile.writelines(srclines[idx]) # I've only studied RRD/RRA enough to know the basics, but this probably should never execute...
+                outfile.writelines(
+                    srclines[idx]
+                )  # I've only studied RRD/RRA enough to know the basics, but this probably should never execute...
         elif "<step>" in srclines[idx]:
             outfile.writelines(f"<step>{requested_step}</step>")
         elif "minimal_heartbeat" in srclines[idx]:
-            outfile.writelines(f"<minimal_heartbeat>{args.heartbeat}</minimal_heartbeat>")
+            outfile.writelines(
+                f"<minimal_heartbeat>{args.heartbeat}</minimal_heartbeat>"
+            )
         elif "<database>" in srclines[idx]:
             in_db = True
             continue
@@ -61,6 +70,7 @@ def main():
     with open(args.output, "w+") as outfile:
         do(outfile, srclines, args)
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
