@@ -9,7 +9,7 @@ def do(outfile, srclines, args):
     max_idx = len(srclines)
     input_step = 0
     requested_step = int(args.step)
-    step_re = re.compile(".*<step>(\d*).*")
+    step_re = re.compile(r"<step>(\d*)")
     try:
         for line in srclines:
             match = step_re.search(line)
@@ -18,7 +18,7 @@ def do(outfile, srclines, args):
                 break
         else:
             sys.exit(1)  # No step found
-    except Exception as e:
+    except:
         sys.exit(5)  # Error in step detection
     if requested_step >= input_step:
         sys.exit(
