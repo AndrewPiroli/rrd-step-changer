@@ -45,10 +45,10 @@ def do(outfile, srclines, args):
                     srclines[idx]
                 )  # I've only studied RRD/RRA enough to know the basics, but this probably should never execute...
         elif "<step>" in srclines[idx]:
-            outfile.writelines(f"<step>{requested_step}</step>")
+            outfile.writelines(f"<step>{requested_step}</step>\n")
         elif "minimal_heartbeat" in srclines[idx]:
             outfile.writelines(
-                f"<minimal_heartbeat>{args.heartbeat}</minimal_heartbeat>"
+                f"<minimal_heartbeat>{args.heartbeat}</minimal_heartbeat>\n"
             )
         elif "<database>" in srclines[idx]:
             in_db = True
