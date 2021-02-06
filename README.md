@@ -1,3 +1,11 @@
+I rewrote this in Rust, it's way faster, and soon to have more features!
+
+https://github.com/AndrewPiroli/RRD-Treadmill
+
+I will archive this repository sometime in the future as I become more comfortable with Rust.
+
+&nbsp;
+
 # RRD Step Changer
 
 This bad boy takes RRD files that have been dumped to XML, installs a new step and heartbeat in there, and duplicates the records enough times to keep the timescale accurate.
