@@ -1,8 +1,8 @@
-I rewrote this in Rust, it's way faster, and soon to have more features!
+I rewrote this in Rust, it's way faster (between 20-50x faster depending on input)! , and ~~soon to have more features!~~ already has more features!
 
 https://github.com/AndrewPiroli/RRD-Treadmill
 
-I will archive this repository sometime in the future as I become more comfortable with Rust.
+~~I will archive this repository sometime in the future as I become more comfortable with Rust.~~
 
 &nbsp;
 
