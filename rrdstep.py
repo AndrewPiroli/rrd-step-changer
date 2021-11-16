@@ -39,22 +39,22 @@ def do(outfile, srclines, args):
                 continue
             elif "<v>" in srclines[idx]:
                 for _ in range(rowrepeat):
-                    outfile.writelines(srclines[idx])
+                    outfile.write(srclines[idx].encode())
             else:
-                outfile.writelines(
-                    srclines[idx]
+                outfile.write(
+                    srclines[idx].encode()
                 )  # I've only studied RRD/RRA enough to know the basics, but this probably should never execute...
         elif "<step>" in srclines[idx]:
-            outfile.writelines(f"<step>{requested_step}</step>\n")
+            outfile.write(f"<step>{requested_step}</step>\n".encode())
         elif "minimal_heartbeat" in srclines[idx]:
-            outfile.writelines(
-                f"<minimal_heartbeat>{args.heartbeat}</minimal_heartbeat>\n"
+            outfile.write(
+                f"<minimal_heartbeat>{args.heartbeat}</minimal_heartbeat>\n".encode()
             )
         elif "<database>" in srclines[idx]:
             in_db = True
             continue
         else:
-            outfile.writelines(srclines[idx])
+            outfile.write(srclines[idx].encode())
         idx += 1
 
 
@@ -67,7 +67,7 @@ def main():
     args = parser.parse_args()
     with open(args.input, "r") as infile:
         srclines = infile.readlines()
-    with open(args.output, "w+") as outfile:
+    with open(args.output, "wb+") as outfile:
         do(outfile, srclines, args)
     sys.exit(0)
 
