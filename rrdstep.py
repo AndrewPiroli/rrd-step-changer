@@ -45,7 +45,7 @@ def rewrite_rrd(
             )
             sys.exit(-4)
     rrd_in_db = False
-    skip = rowrepeat
+    skip = 0
     idx = 0
     max_idx = len(input_file_lines)
     # This is not the most pythonic way to loop over a file...
