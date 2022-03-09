@@ -1,19 +1,19 @@
 import argparse
 import re
 import sys
-from typing import BinaryIO, List
+from typing import BinaryIO, List, TextIO
 
 
 def rewrite_rrd(
     output_file: BinaryIO,
-    input_file_lines: List[str],
+    input_file: TextIO,
     requested_step: int,
     requested_heartbeat: int,
 ):
     # Determine the step of the input RRD dump
     step_re = re.compile(r"<step>(\d*)")
     try:
-        for line in input_file_lines:
+        for line in input_file:
             match = step_re.search(line)
             if match:
                 input_step = int(match.group(1))
@@ -21,6 +21,7 @@ def rewrite_rrd(
         else:
             print("Error, unable to find step in existing RRD dump!", file=sys.stderr)
             sys.exit(-1)
+        input_file.seek(0)
     except Exception as err:
         print(
             f"Exception while finding step in existing RRD dump: {err}", file=sys.stderr
@@ -47,41 +48,37 @@ def rewrite_rrd(
     rrd_in_db = False
     skip = 0
     idx = 0
-    max_idx = len(input_file_lines)
-    # This is not the most pythonic way to loop over a file...
-    # But it ends up working ok here
-    while True:
-        if idx == max_idx:
-            break
+    for line in input_file:
         if rrd_in_db:
-            if "</database>" in input_file_lines[idx]:
+            if "</database>" in line:
+                output_file.write(line.encode())
                 skip = 0
                 rrd_in_db = False
                 continue
-            elif "<row>" in input_file_lines[idx]:
+            elif "<row>" in line:
                 if going_up:
                     for _ in range(rowrepeat):
-                        output_file.write(input_file_lines[idx].encode())
+                        output_file.write(line.encode())
                 else:
                     if skip == rowrepeat:
-                        output_file.write(input_file_lines[idx].encode())
+                        output_file.write(line.encode())
                         skip = 0
                     else:
                         skip += 1
             else:
-                output_file.write(input_file_lines[idx].encode())
-        elif "<step>" in input_file_lines[idx]:
+                output_file.write(line.encode())
+        elif "<step>" in line:
             output_file.write(f"<step>{requested_step}</step>\n".encode())
-        elif "minimal_heartbeat" in input_file_lines[idx]:
+        elif "minimal_heartbeat" in line:
             output_file.write(
                 f"<minimal_heartbeat>{requested_heartbeat}</minimal_heartbeat>\n".encode()
             )
-        elif "<database>" in input_file_lines[idx]:
+        elif "<database>" in line:
+            output_file.write(line.encode())
             rrd_in_db = True
             continue
         else:
-            output_file.write(input_file_lines[idx].encode())
-        idx += 1
+            output_file.write(line.encode())
 
 
 if __name__ == "__main__":
@@ -112,7 +109,4 @@ if __name__ == "__main__":
     # same storage, because it requires conversions between unicode and binary data using a character
     # codec. This can become noticeable handling huge amounts of text data like large log files."
     with open(args.input, "r") as input_file, open(args.output, "wb") as output_file:
-        # Yes, it reads the entire input file into memory.
-        # We need a linecount anyway, the only way to get that is to check all the lines, so we
-        # would have done that anyway. Saves a few TextIOWrapper.seek() at least.
-        rewrite_rrd(output_file, input_file.readlines(), requested_step, requested_heartbeat)
+        rewrite_rrd(output_file, input_file, requested_step, requested_heartbeat)
