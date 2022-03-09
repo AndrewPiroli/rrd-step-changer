@@ -96,7 +96,7 @@ if __name__ == "__main__":
         if requested_step < 1 or requested_heartbeat < 1:
             raise ValueError("Step or Heartbeat is not a positive integer")
     except Exception as err:
-        print(f"Fatal error: {err}")
+        print(f"Fatal error: {err}", file=sys.stderr)
         sys.exit(-5)
     # Open the output in binary mode, even though we are only dealing with text
     # This is a much needed optimization found by profiling the original text version
